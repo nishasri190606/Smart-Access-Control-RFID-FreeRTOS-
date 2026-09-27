@@ -1,0 +1,65 @@
+#include "lcd.h"
+
+static I2C_HandleTypeDef *lcd_i2c;
+
+#define LCD_ADDRESS (0x27 << 1)
+
+static void LCD_SendCommand(uint8_t command)
+{
+    uint8_t data[4];
+
+    data[0] = command & 0xF0;
+    data[1] = data[0] | 0x04;
+    data[2] = data[0];
+    data[3] = (command << 4) & 0xF0;
+
+    HAL_I2C_Master_Transmit(lcd_i2c, LCD_ADDRESS, data, 4, HAL_MAX_DELAY);
+}
+
+void LCD_Init(I2C_HandleTypeDef *hi2c)
+{
+    lcd_i2c = hi2c;
+
+    HAL_Delay(50);
+
+    LCD_SendCommand(0x28);
+    LCD_SendCommand(0x0C);
+    LCD_SendCommand(0x06);
+    LCD_SendCommand(0x01);
+
+    HAL_Delay(5);
+}
+
+void LCD_Clear(void)
+{
+    LCD_SendCommand(0x01);
+    HAL_Delay(2);
+}
+
+void LCD_SetCursor(uint8_t row, uint8_t column)
+{
+    uint8_t address;
+
+    if (row == 0)
+        address = 0x80 + column;
+    else
+        address = 0xC0 + column;
+
+    LCD_SendCommand(address);
+}
+
+void LCD_Print(char *text)
+{
+    while (*text)
+    {
+        HAL_I2C_Master_Transmit(
+            lcd_i2c,
+            LCD_ADDRESS,
+            (uint8_t *)text,
+            1,
+            HAL_MAX_DELAY
+        );
+
+        text++;
+    }
+}

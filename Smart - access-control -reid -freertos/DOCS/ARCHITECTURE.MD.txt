@@ -1,0 +1,45 @@
+# System Architecture
+
+The project uses four FreeRTOS tasks.
+
+## 1. RFID Task
+
+Reads RFID card information from the RC522 driver and sends the UID to the RFID queue.
+
+## 2. Authentication Task
+
+Receives the UID from the RFID queue and compares it with the authorized UID.
+
+## 3. Door Task
+
+Controls the door/lock output and buzzer based on authentication result.
+
+## 4. LCD Task
+
+Displays system status and RFID instructions.
+
+## RTOS Objects
+
+- RFID Queue
+- Authentication Queue
+- LCD Mutex
+
+## Data Flow
+
+RFID Reader
+    ↓
+RFID Task
+    ↓
+RFID Queue
+    ↓
+Authentication Task
+    ↓
+Authentication Queue
+    ↓
+Door Task
+    ↓
+Door / Buzzer
+
+LCD Task
+    ↓
+LCD Display

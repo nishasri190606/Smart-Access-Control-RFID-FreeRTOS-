@@ -1,0 +1,9 @@
+#ifndef RC522_H
+#define RC522_H
+
+#include "main.h"
+
+void RC522_Init(SPI_HandleTypeDef *hspi);
+uint8_t RC522_ReadUID(uint8_t *uid, uint8_t *length);
+
+#endif
